@@ -1,0 +1,3 @@
+Hello {{ name }},
+
+Your enquiry has been received by Gyanpath. The organization will review your message.

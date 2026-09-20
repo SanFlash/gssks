@@ -1,0 +1,5 @@
+Hello {{ name }},
+
+Your registration for {{ event.title }} has been recorded.
+Date: {{ event.date or "To be updated" }}
+Location: {{ event.location or "To be updated" }}

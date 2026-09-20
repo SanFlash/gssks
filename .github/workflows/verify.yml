@@ -1,0 +1,44 @@
+name: Verify Python 3.13 application
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: gyanpath_test
+          POSTGRES_PASSWORD: ephemeral_ci_only
+          POSTGRES_DB: gyanpath_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      FLASK_APP: run:app
+      FLASK_ENV: development
+      SECRET_KEY: ephemeral-test-key-not-for-deployment-123
+      DATABASE_URL: postgresql+psycopg://gyanpath_test:ephemeral_ci_only@localhost:5432/gyanpath_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - run: python scripts/verify_runtime.py
+      - run: python -m flask db upgrade
+      - run: python -m flask init-content
+      - run: python -m flask db check
+      - run: python -m pytest -q
+      - name: Run functional suite against isolated PostgreSQL database
+        env:
+          TEST_DATABASE_URL: postgresql+psycopg://gyanpath_test:ephemeral_ci_only@localhost:5432/gyanpath_test
+        run: python -m pytest -q

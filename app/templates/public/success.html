@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<section class="page-heading"><span class="large-glyph">✳</span><h1>Thank you for<br><em>your support.</em></h1><p>Your donation of {{ donation.amount|inr }} has been verified.</p><a class="button" href="/donations/{{ donation.token }}/receipt">View your receipt ↗</a></section>{% endblock %}

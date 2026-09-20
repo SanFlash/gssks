@@ -1,0 +1,5 @@
+Hello {{ donation.name }},
+
+Your donation of {{ donation.amount|inr }} has been verified.
+Download your receipt: {{ receipt_url }}
+This receipt does not certify tax deductibility.

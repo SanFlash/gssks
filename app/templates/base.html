@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} · GSSKS</title>
+<meta name="description" content="{{ record.seo_description if record is defined and record.seo_description else site.seo_description }}">
+{% if record is defined and record.keywords %}<meta name="keywords" content="{{ record.keywords }}">{% endif %}
+<meta name="ga-measurement-id" content="{{ config.GA_MEASUREMENT_ID }}"><meta name="csrf-token" content="{{ csrf_token() }}"><link rel="canonical" href="{{ canonical }}">
+<meta property="og:title" content="{{ title }} · GSSKS"><meta property="og:description" content="{{ site.seo_description }}"><meta property="og:url" content="{{ canonical }}"><meta property="og:type" content="website"><meta name="twitter:card" content="summary">
+<link rel="icon" href="{{ site.favicon or url_for('static', filename='images/gssks-logo.png') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
+<script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+{% block head %}{% endblock %}
+<script type="application/ld+json">{{ organization_schema | tojson }}</script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<a href="#main" class="skip">Skip to content</a>
+{% block navigation %}
+<div class="top-strip"><span>Established {{ site.established }} · {{ site.recognition }}</span><a href="tel:{{ site.phone }}">{{ site.phone }}</a></div>
+<header class="site-header">
+<a class="brand" href="/" aria-label="GSSKS home"><img src="{{ site.logo or url_for('static', filename='images/gssks-logo.png') }}" width="44" height="44" alt=""><span>Gyan Path<small>SHIKSHA EVAM SAMAJ KALYAN SAMITI</small></span></a>
+<button class="menu-toggle" aria-controls="primary-nav" aria-expanded="false" aria-label="Open navigation">☰</button>
+<nav id="primary-nav" aria-label="Main navigation">
+{% for path, label in [('/', 'Home'),('/about','About Us'),('/work','Our Work'),('/projects','Projects'),('/impact','Impact'),('/gallery','Gallery'),('/news-events','News & Events'),('/get-involved','Get Involved'),('/documents','Documents'),('/contact','Contact Us')] %}<a href="{{ path }}" {% if request.path == path %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+{% for item in navigation %}<a href="{{ item.path }}">{{ item.title }}</a>{% endfor %}
+<a class="search-link" href="/search" aria-label="Search">⌕</a>
+</nav></header>
+{% endblock %}
+{% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="toast {{ category }}" role="status">{{ message }}<button type="button" aria-label="Dismiss notification">×</button></div>{% endfor %}{% endwith %}
+<main id="main">{% block content %}{% endblock %}</main>
+{% block footer %}
+<footer class="site-footer"><div class="footer-grid"><div><a class="brand" href="/"><img src="{{ site.logo or url_for('static', filename='images/gssks-logo.png') }}" width="44" height="44" alt=""><span>GSSKS</span></a><p>{{ site.footer_text }}</p><p>{{ site.organization_name }}</p><p>Registration No. {{ site.registration }}<br>{{ site.address }}</p><p><a href="tel:{{ site.phone }}">{{ site.phone }}</a><a href="tel:{{ site.mobile }}">{{ site.mobile }}</a><a href="mailto:{{ site.email }}">{{ site.email }}</a></p><div class="socials">{% for social in socials %}<a href="{{ social.url }}" rel="noopener noreferrer" target="_blank">{{ social.title }}</a>{% endfor %}</div></div>
+<div><h3>Explore</h3><a href="/about">About us</a><a href="/work">Our Work</a><a href="/get-involved">Get Involved</a><a href="/projects">Projects</a><a href="/artisans">Artisans</a><a href="/news-events">News & Events</a></div>
+<div><h3>Stay informed</h3><a href="/gallery">Gallery</a><a href="/videos">Videos</a><a href="/reports">Reports</a><a href="/annual-reports">Annual reports</a><a href="/certificates">Certificates</a><a href="/associations">Associations</a><a href="/faq">FAQs</a></div>
+<div><h3>A little closer to our work.</h3><p>Receive updates from the organization.</p><form action="/newsletter" method="post" class="newsletter">{{ newsletter_form.csrf_token }}<label for="newsletter-email">Email address</label>{{ newsletter_form.email(id='newsletter-email', placeholder='you@example.com', type='email', required=True) }}<label class="check">{{ newsletter_form.consent(id='newsletter-consent') }}<span>Send me updates. I can unsubscribe at any time.</span></label><button type="submit" class="button outline">Subscribe →</button></form></div></div>
+<div class="footer-bottom"><span>© {{ current_year }} {{ site.organization_name }}</span><div><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookie-policy">Cookies</a><a href="/login">Staff login</a></div></div></footer>
+<div class="floating-actions">{% if site.whatsapp %}<a class="button outline" href="https://wa.me/{{ site.whatsapp }}" rel="noopener" target="_blank">WhatsApp</a>{% endif %}<a class="button" href="/contact">Contact us ↗</a></div>
+{% endblock %}
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" hidden><button class="lightbox-close" aria-label="Close image viewer">×</button><button class="lightbox-prev" aria-label="Previous image">←</button><img alt=""><button class="lightbox-next" aria-label="Next image">→</button><button class="lightbox-full" aria-label="Fullscreen">Fullscreen</button><p></p></div>
+{% if config.GA_MEASUREMENT_ID and not request.path.startswith(('/admin','/login','/account','/donations','/donation-success','/reset-password','/forgot-password')) %}<aside class="analytics-consent" id="analytics-consent" hidden aria-label="Analytics preference"><p>Allow optional anonymous usage analytics to help improve this website?</p><button type="button" data-analytics="yes" class="button small">Allow analytics</button><button type="button" data-analytics="no" class="button outline small">Essential only</button><a href="/cookie-policy">Cookie policy</a></aside><script src="/static/js/analytics.js" defer></script>{% endif %}
+{% block scripts %}{% endblock %}
+</body></html>

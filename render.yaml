@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: gyanpath-ngo
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    preDeployCommand: python -m flask db upgrade && python -m flask init-content
+    startCommand: gunicorn --workers 2 --threads 4 --timeout 60 --bind 0.0.0.0:$PORT run:app
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.15
+      - key: FLASK_APP
+        value: run:app
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gyanpath-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: gyanpath-rate-limits
+          property: connectionString
+      - key: SITE_URL
+        sync: false
+      - key: DONATIONS_ENABLED
+        value: 'false'
+  - type: keyvalue
+    name: gyanpath-rate-limits
+    plan: starter
+    ipAllowList: []
+    maxmemoryPolicy: allkeys-lru
+
+databases:
+  - name: gyanpath-db
+    plan: basic-256mb
+    databaseName: gyanpath
+    user: gyanpath

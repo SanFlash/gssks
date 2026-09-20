@@ -1,0 +1,3 @@
+Hello {{ name }},
+
+Your volunteer application has been approved. The organization will contact you with next steps.

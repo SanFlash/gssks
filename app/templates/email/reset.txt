@@ -1,0 +1,3 @@
+A password reset was requested for your Gyanpath account.
+Use this single-use link within 30 minutes: {{ reset_url }}
+If you did not request this, you can ignore this message.

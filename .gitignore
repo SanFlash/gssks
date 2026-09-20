@@ -1,0 +1,13 @@
+.env
+.venv/
+venv/
+instance/*
+!instance/.gitkeep
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+*.db
+node_modules/
+test-results/

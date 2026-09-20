@@ -1,0 +1,134 @@
+{
+  "transport": "local WSGI HTTP server",
+  "browser": "Chromium 139",
+  "reduced_motion": true,
+  "external_assets": "blocked to verify local fallback",
+  "checks": [
+    {
+      "route": "/",
+      "width": 320,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 360,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 375,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 414,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 430,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 480,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 768,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 820,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 1024,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 1280,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 1366,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 1600,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 1920,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/",
+      "width": 2560,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/projects",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/projects/gandhi-shilp-bazaar-2024",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/news-events",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/get-involved",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/volunteer",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/contact",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/donate",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/gallery",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/login",
+      "width": 390,
+      "horizontal_overflow": false
+    }
+  ],
+  "javascript_errors": []
+}

@@ -1,0 +1,1 @@
+New {{ entity }} submission received. Open the private admin workspace to review it.
