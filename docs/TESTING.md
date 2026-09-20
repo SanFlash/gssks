@@ -3,8 +3,8 @@
 ## Recorded result
 
 - Python: **3.13.15**; all direct runtime imports passed.
-- Automated backend/adapter suite: **125 passed**.
-- Browser: **25 responsive route/width checks passed**, plus mobile navigation, sign-in, admin/editor, public demo filtering, and contact/volunteer submissions.
+- Automated backend/adapter suite: **133 passed**.
+- Browser: **28 responsive route/width checks passed**, plus mobile navigation, sign-in, admin/editor, public demo filtering, and contact/volunteer submissions.
 - SQLite: initial migration applied; migration drift check reported no new operations.
 
 ## Automated functional tests
@@ -60,3 +60,5 @@ Lighthouse scores, real mobile-device results, live gateway results and an indep
 You can run the same suite against a **disposable test database only** by setting `TEST_DATABASE_URL`. The fixture creates and drops all application tables. Never point that variable at production or a database containing records you need to retain.
 
 Local startup regression: fresh temporary checkout, no .env or database, `python run.py` creates both and serves HTTP 200. Repeat initialization preserves users and configuration. Production and remote databases are rejected by automatic local setup.
+
+Client UI revision: Python 3.13.15, 133 tests passed. Browser checks include ICPS, recognition, About, Website Studio, and saving founder biography through the admin form. Source-review drafts stay outside public routes/search/sitemap. Certificate tests cover complete metadata and public/private document boundaries.

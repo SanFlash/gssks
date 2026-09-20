@@ -42,6 +42,8 @@ CHOICES = {
         "Other Documents",
     ],
     "Gallery.category": [
+        "ICPS",
+        "Other Initiatives",
         "Projects",
         "Events",
         "Training",

@@ -119,6 +119,8 @@ def seed_content(demo=True):
     from app.services.client_brief import apply_client_brief
 
     apply_client_brief()
+    from app.services.design_brief import apply_design_brief
+    apply_design_brief()
     if not demo:
         db.session.commit()
         return

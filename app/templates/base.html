@@ -9,9 +9,9 @@
 <meta property="og:title" content="{{ title }} · GSSKS"><meta property="og:description" content="{{ site.seo_description }}"><meta property="og:url" content="{{ canonical }}"><meta property="og:type" content="website"><meta name="twitter:card" content="summary">
 <link rel="icon" href="{{ site.favicon or url_for('static', filename='images/gssks-logo.png') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
-<script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}"><script src="{{ url_for('static', filename='js/main.js') }}" defer></script><script src="{{ url_for('static', filename='js/certificates.js') }}" defer></script>
 {% block head %}{% endblock %}
 <script type="application/ld+json">{{ organization_schema | tojson }}</script>
 </head>
@@ -23,7 +23,7 @@
 <a class="brand" href="/" aria-label="GSSKS home"><img src="{{ site.logo or url_for('static', filename='images/gssks-logo.png') }}" width="44" height="44" alt=""><span>Gyan Path<small>SHIKSHA EVAM SAMAJ KALYAN SAMITI</small></span></a>
 <button class="menu-toggle" aria-controls="primary-nav" aria-expanded="false" aria-label="Open navigation">☰</button>
 <nav id="primary-nav" aria-label="Main navigation">
-{% for path, label in [('/', 'Home'),('/about','About Us'),('/work','Our Work'),('/projects','Projects'),('/impact','Impact'),('/gallery','Gallery'),('/news-events','News & Events'),('/get-involved','Get Involved'),('/documents','Documents'),('/contact','Contact Us')] %}<a href="{{ path }}" {% if request.path == path %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+{% for path, label in [('/', 'Home'),('/about','About'),('/icps','ICPS'),('/work','Our Work'),('/recognition','Recognition'),('/gallery','Gallery'),('/documents','Documents'),('/contact','Contact'),('/get-involved','Get Involved')] %}<a href="{{ path }}" {% if request.path == path %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
 {% for item in navigation %}<a href="{{ item.path }}">{{ item.title }}</a>{% endfor %}
 <a class="search-link" href="/search" aria-label="Search">⌕</a>
 </nav></header>
@@ -38,7 +38,7 @@
 <div class="footer-bottom"><span>© {{ current_year }} {{ site.organization_name }}</span><div><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookie-policy">Cookies</a><a href="/login">Staff login</a></div></div></footer>
 <div class="floating-actions">{% if site.whatsapp %}<a class="button outline" href="https://wa.me/{{ site.whatsapp }}" rel="noopener" target="_blank">WhatsApp</a>{% endif %}<a class="button" href="/contact">Contact us ↗</a></div>
 {% endblock %}
-<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" hidden><button class="lightbox-close" aria-label="Close image viewer">×</button><button class="lightbox-prev" aria-label="Previous image">←</button><img alt=""><button class="lightbox-next" aria-label="Next image">→</button><button class="lightbox-full" aria-label="Fullscreen">Fullscreen</button><p></p></div>
+<dialog id="certificate-dialog" aria-labelledby="certificate-title"><div class="certificate-toolbar"><h2 id="certificate-title">Certificate</h2><button type="button" id="certificate-close" aria-label="Close certificate">×</button></div><iframe title="Verified award certificate"></iframe><a id="certificate-direct" class="text-link" target="_blank" rel="noopener">Open PDF in a new tab ↗</a></dialog><div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" hidden><button class="lightbox-close" aria-label="Close image viewer">×</button><button class="lightbox-prev" aria-label="Previous image">←</button><img alt=""><button class="lightbox-next" aria-label="Next image">→</button><button class="lightbox-full" aria-label="Fullscreen">Fullscreen</button><p></p></div>
 {% if config.GA_MEASUREMENT_ID and not request.path.startswith(('/admin','/login','/account','/donations','/donation-success','/reset-password','/forgot-password')) %}<aside class="analytics-consent" id="analytics-consent" hidden aria-label="Analytics preference"><p>Allow optional anonymous usage analytics to help improve this website?</p><button type="button" data-analytics="yes" class="button small">Allow analytics</button><button type="button" data-analytics="no" class="button outline small">Essential only</button><a href="/cookie-policy">Cookie policy</a></aside><script src="/static/js/analytics.js" defer></script>{% endif %}
 {% block scripts %}{% endblock %}
 </body></html>

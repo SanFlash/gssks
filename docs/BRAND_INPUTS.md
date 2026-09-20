@@ -2,7 +2,7 @@
 
 The official logo supplied by the organization is included unchanged at `app/static/images/gssks-logo.png`. It is the default public and admin logo and favicon; the CMS can override public branding.
 
-The supplied business card identifies I.S. Chauhan as President. Leadership copy awaits the next content update.
+The supplied business card identifies I.S. Chauhan as President. The later Changes.pdf explicitly corrects the website title to I. S. Chauhan, Founder & Director; the website now follows that newer client instruction. Exact award particulars remain pending.
 
 Contact reconciliation required before changing the approved website brief:
 

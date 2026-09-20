@@ -9,11 +9,11 @@ from app.models import OrganizationSetting, SiteSetting, BlogPost
 DEFAULTS = {
     "organization_name": "Gyan Path Shiksha Evam Samaj Kalyan Samiti",
     "location": "Bhopal, Madhya Pradesh, India",
-    "hero_title": "Education.\nAwareness.\nEmpowerment.",
-    "hero_subtitle": "A community-focused social-development organization in Bhopal, established in 1992 and recognised by the M.P. Government.",
+    "hero_title": "Protecting Childhood.\nCreating Opportunities.\nStrengthening Communities.",
+    "hero_subtitle": "Working across child protection, education, awareness, empowerment and community development.",
     "who_heading": "Rooted in Bhopal. Since 1992.",
     "who_text": "Gyan Path Shiksha Evam Samaj Kalyan Samiti (GSSKS) was established in 1992 and is recognised by the M.P. Government. The organization works in education, awareness, empowerment, community development and artisan/livelihood-related programmes.",
-    "footer_text": "Education, skills and craft. Pathways to a better future.",
+    "footer_text": "Education • Awareness • Empowerment",
     "email": "gyanpathngo.176@gmail.com",
     "phone": "0755-4278487",
     "mobile": "088893937454",
@@ -35,6 +35,21 @@ DEFAULTS = {
     "maintenance": "false",
     "setup_complete": "false",
 }
+
+DEFAULTS.update({
+    "hero_image_alt": "GSSKS organization photograph",
+    "founder_name": "I. S. Chauhan",
+    "founder_role": "Founder & Director",
+    "founder_bio": "I. S. Chauhan founded GSSKS. Further biographical details will be updated by the organization.",
+    "founder_image": "",
+    "icps_image": "",
+    "icps_intro": "The organization identifies ICPS as its core area of work. Its specific responsibilities, services and programme locations will be published after organization approval.",
+})
+for level in ("national", "state"):
+    for field in ("name", "year", "authority", "document_id"):
+        DEFAULTS[f"{level}_award_{field}"] = ""
+    DEFAULTS[f"{level}_award_verified"] = "false"
+
 
 
 def settings():

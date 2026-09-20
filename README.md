@@ -6,6 +6,10 @@ Flask / Jinja2 website and management platform for **Gyan Path Shiksha Evam Sama
 
 The application includes a public website and a separate permission-controlled admin workspace. Organization information is configurable. Sample records are clearly marked **DEMO CONTENT** and excluded from public queries by default in every environment. No registration, government association, certification, tax exemption or impact number is invented.
 
+## Blue/red UI and Website Studio
+
+The latest [UI revision guide](docs/UI_REVISION.md) covers the ICPS-first design, founder profile, recognition verification, linked-source review and admin editing. After login, open `/admin/content-studio`. Award certificates and authentic photos are still required from the organization.
+
 ## Render Free
 
 Already hosting on Render? Follow [Render Free setup](docs/RENDER_FREE.md). Set the start command to `python scripts/render_start.py`, supply PostgreSQL DATABASE_URL and a 32+ character SECRET_KEY. Startup applies migrations and initializes official content. No paid pre-deploy hook or shell is needed.

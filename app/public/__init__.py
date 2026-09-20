@@ -44,6 +44,7 @@ from app.services.content import published_query, content_list, settings
 from app.services import applications
 from app.services.media import MediaService
 from app.services.payments import PaymentService
+from app.services.design_brief import recognition_cards
 
 public_bp = Blueprint("public", __name__)
 COLLECTIONS = {
@@ -55,6 +56,7 @@ COLLECTIONS = {
     "impact-stories": ImpactStory,
 }
 FOCUS = [
+    ("icps", "Child Protection", "ICPS and child-focused work."),
     ("education", "Education", "Education-related work and programmes."),
     ("awareness", "Awareness", "Information and community awareness."),
     ("empowerment", "Empowerment", "Empowerment-related activities."),
@@ -68,7 +70,9 @@ FOCUS = [
 def home():
     return render_template(
         "public/home.html",
-        title="GSSKS · Education, Awareness & Empowerment",
+        title="GSSKS · Child Protection & Social Development",
+        awards=recognition_cards(settings()),
+        documents=public_documents(3),
         gallery=content_list(Gallery, 3),
         news=content_list(BlogPost, 3),
         events=content_list(Event, 3),
@@ -80,6 +84,25 @@ def home():
             db.select(ImpactStatistic).order_by(ImpactStatistic.position)
         ).all(),
     )
+
+
+def public_documents(limit=30):
+    return db.session.scalars(db.select(Document).join(MediaAsset).where(Document.visibility == "public", MediaAsset.visibility == "public").order_by(Document.created_at.desc()).limit(limit)).all()
+
+
+@public_bp.get("/recognition")
+def recognition():
+    return render_template("public/recognition.html", title="Leadership & Recognition", awards=recognition_cards(settings()))
+
+
+@public_bp.get("/icps")
+def icps():
+    record = db.session.scalar(published_query(Page).where(Page.slug == "icps"))
+    if not record:
+        abort(404)
+    sections = db.session.scalars(db.select(PageSection).where(PageSection.page_id == record.id).order_by(PageSection.position)).all()
+    photos = db.session.scalars(published_query(Gallery).where(Gallery.category == "ICPS").limit(12)).all()
+    return render_template("public/icps.html", title=record.title, record=record, sections=sections, photos=photos)
 
 
 @public_bp.get("/news-events")
@@ -142,6 +165,7 @@ def listing_or_page(section):
             records=page.items,
             pagination=page,
             q=q,
+            gallery_categories=sorted({g.category for g in db.session.scalars(published_query(Gallery)).all() if g.category}) if section == "gallery" else [],
         )
     record = db.session.scalar(published_query(Page).where(Page.slug == section))
     if not record:
@@ -151,6 +175,8 @@ def listing_or_page(section):
         .where(PageSection.page_id == record.id)
         .order_by(PageSection.position)
     ).all()
+    if section == "about":
+        return render_template("public/about.html", title=record.title, record=record, sections=sections)
     if section in {"handicrafts", "handlooms"}:
         craft_query = published_query(Gallery).where(
             Gallery.category.in_(
@@ -428,6 +454,7 @@ def sitemap():
         "/news-events",
         "/get-involved",
         "/impact",
+        "/recognition",
         "/contact",
         "/volunteer",
         "/donate",

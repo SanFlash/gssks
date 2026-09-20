@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 from werkzeug.serving import make_server, WSGIRequestHandler
 from playwright.sync_api import sync_playwright
+from dotenv import dotenv_values
 from app import create_app
 from app.extensions import db
 from app.cli import seed_content
@@ -19,6 +20,7 @@ class QuietHandler(WSGIRequestHandler):
 temporary = tempfile.TemporaryDirectory()
 app = create_app(
     {
+        **{key: value for key, value in dotenv_values(".env.example").items() if key.startswith("DEMO_")},
         "RATELIMIT_ENABLED": False,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///" + temporary.name + "/browser.db",
     }
@@ -71,18 +73,23 @@ with sync_playwright() as p:
         )
         results.append({"route": "/", "width": width, "horizontal_overflow": overflow})
         if overflow:
+            page.screenshot(path='/tmp/gssks-overflow.png', full_page=True)
+            print(page.evaluate("({width:innerWidth,doc:document.documentElement.scrollWidth,body:document.body.scrollWidth,bad:[...document.querySelectorAll('*')].filter(e=>e.scrollWidth>e.clientWidth+2).map(e=>({tag:e.tagName,cls:e.className,w:e.clientWidth,s:e.scrollWidth})).slice(0,30)})"))
             print(page.evaluate("[...document.querySelectorAll('body *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>({tag:e.tagName,cls:e.className,right:e.getBoundingClientRect().right,text:e.innerText?.slice(0,70)})).slice(0,20)"))
         assert not overflow, f"Homepage overflows at {width}"
     page.set_viewport_size({"width": 390, "height": 844})
     page.screenshot(path=str(output / "home-mobile.png"), full_page=True)
     page.get_by_role("button", name="Open navigation").click()
     page.locator("#primary-nav").get_by_role(
-        "link", name="Projects", exact=True
+        "link", name="ICPS", exact=True
     ).click()
-    assert page.url.endswith("/projects")
+    assert page.url.endswith("/icps")
     for path in [
         "/projects",
         "/projects/gandhi-shilp-bazaar-2024",
+        "/icps",
+        "/recognition",
+        "/about",
         "/news-events",
         "/get-involved",
         "/volunteer",
@@ -105,6 +112,18 @@ with sync_playwright() as p:
     page.screenshot(path=str(output / "admin-mobile.png"), full_page=True)
     page.set_viewport_size({"width": 1440, "height": 1000})
     page.screenshot(path=str(output / "admin-desktop.png"), full_page=True)
+    page.goto("http://127.0.0.1:5099/admin/content-studio", wait_until="domcontentloaded")
+    assert page.get_by_role("heading", name="ICPS programme page").count() == 1
+    page.screenshot(path=str(output / "studio-desktop.png"), full_page=True)
+    page.set_viewport_size({"width": 390, "height": 844})
+    assert not page.evaluate("document.documentElement.scrollWidth > innerWidth + 1")
+    page.screenshot(path=str(output / "studio-mobile.png"), full_page=True)
+    page.goto("http://127.0.0.1:5099/admin/website/leadership", wait_until="domcontentloaded")
+    page.locator("#founder_bio").fill("Organization-approved biography entered during browser verification.")
+    page.get_by_role("button", name="Save settings").click()
+    page.goto("http://127.0.0.1:5099/recognition", wait_until="domcontentloaded")
+    assert "Organization-approved biography entered during browser verification." in page.locator("main").inner_text()
+    page.set_viewport_size({"width": 1440, "height": 1000})
     page.goto(
         "http://127.0.0.1:5099/admin/manage/projects/new", wait_until="domcontentloaded"
     )

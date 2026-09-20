@@ -535,6 +535,30 @@ def media_download(record_id):
     )
 
 
+EDITOR_GROUPS = {
+    "branding": ("Branding & homepage", ["logo", "favicon", "hero_image", "hero_image_alt", "hero_title", "hero_subtitle", "who_heading", "who_text", "footer_text"]),
+    "leadership": ("Founder & leadership", ["founder_name", "founder_role", "founder_bio", "founder_image"]),
+    "icps": ("ICPS feature", ["icps_intro", "icps_image"]),
+    "recognition": ("Recognition — recipient is the founder", [f"{level}_award_{field}" for level in ("national", "state") for field in ("name", "year", "authority", "document_id", "verified")]),
+}
+
+
+@admin_bp.get("/content-studio")
+@permission_required("admin.view")
+def content_studio():
+    pages = {p.slug: p for p in db.session.scalars(db.select(m.Page).where(m.Page.slug.in_(["icps", "about", "source-review-client-links"])))}
+    return render_template("admin/content_studio.html", title="Website studio", pages=pages, groups=EDITOR_GROUPS)
+
+
+@admin_bp.route("/website/<group>", methods=["GET", "POST"])
+@permission_required("settings.manage")
+def website_editor(group):
+    if group not in EDITOR_GROUPS:
+        abort(404)
+    title, keys = EDITOR_GROUPS[group]
+    return settings_screen(keys, title)
+
+
 SETUP_GROUPS = [
     (
         "Organization information",
@@ -590,6 +614,8 @@ def settings_screen(keys, title, step=None):
                     "logo",
                     "favicon",
                     "hero_image",
+                    "founder_image",
+                    "icps_image",
                     "maps_url",
                 } and not safe_url(value, media=key != "maps_url"):
                     raise ValueError("Use approved HTTPS media URLs.")
@@ -601,6 +627,14 @@ def settings_screen(keys, title, step=None):
                     raise ValueError(
                         "WhatsApp must contain 7–15 digits, including country code."
                     )
+                if key.endswith("_award_verified") and value not in {"true", "false"}:
+                    raise ValueError("Award verification must be true or false.")
+                if key.endswith("_award_year") and value and (not value.isdigit() or not 1900 <= int(value) <= 2100):
+                    raise ValueError("Award year must be a four-digit year between 1900 and 2100.")
+                if key.endswith("_award_document_id") and value:
+                    document = db.session.get(m.Document, int(value)) if value.isdigit() else None
+                    if not document or not document.media or document.visibility != "public" or document.media.visibility != "public" or document.media.format != "pdf":
+                        raise ValueError("Select the ID of a public PDF document with a public media asset.")
                 if key == "maintenance" and value not in {"true", "false"}:
                     raise ValueError("Maintenance must be true or false.")
                 record = db.session.scalar(
@@ -612,6 +646,12 @@ def settings_screen(keys, title, step=None):
                     record = m.OrganizationSetting(key=key)
                     db.session.add(record)
                 record.value = value
+            if any(key.endswith("_award_verified") for key in keys):
+                from app.services.design_brief import recognition_cards
+                pending = settings()
+                for award in recognition_cards(pending):
+                    if pending.get(award["level"].lower() + "_award_verified") == "true" and not award["ready"]:
+                        raise ValueError("Verification requires the exact award name, year, authority and a public PDF certificate.")
             if step == len(SETUP_GROUPS):
                 record = db.session.scalar(
                     db.select(m.OrganizationSetting).where(

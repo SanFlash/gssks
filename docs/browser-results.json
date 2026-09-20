@@ -95,6 +95,21 @@
       "horizontal_overflow": false
     },
     {
+      "route": "/icps",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/recognition",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "/about",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
       "route": "/news-events",
       "width": 390,
       "horizontal_overflow": false

@@ -6,7 +6,7 @@ from app.services.client_brief import apply_client_brief
 def test_client_facts_and_publication_gate(app, client):
     app.config['SHOW_DEMO_CONTENT'] = False
     home = client.get('/').get_data(as_text=True)
-    for text in ['Education.', 'Awareness.', 'Empowerment.', '1262/92', '1992', '0755-4278487', '088893937454', 'gyanpathngo.176@gmail.com', 'Gandhi Shilp Bazaar', '₹14,95,577+']:
+    for text in ['Protecting Childhood.', 'Creating Opportunities.', 'Strengthening Communities.', '1262/92', '1992', '0755-4278487', '088893937454', 'gyanpathngo.176@gmail.com', 'Gandhi Shilp Bazaar', '₹14,95,577+']:
         assert text in home
     assert 'DEMO CONTENT' not in home
     assert 'craft-scene' not in home
