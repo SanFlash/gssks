@@ -1,3 +1,11 @@
+# Local first-run fix
+
+If you see “Configuration required” locally, update the source and run `python run.py` from the project root. It now initializes the local database automatically. You do not need to manually copy .env or run seed.py on a fresh installation.
+
+If an existing `.env` has `FLASK_ENV=production`, local startup deliberately stops. For local use, set `FLASK_ENV=development` and `DATABASE_URL=sqlite:///gyanpath.db`; keep any real production configuration separate. Shell environment variables take precedence over `.env`.
+
+This fix does not deploy a live production instance. Gunicorn/Render continue to use migrations and production configuration described in DEPLOYMENT.md.
+
 # Troubleshooting
 
 ## Password typing appears blank

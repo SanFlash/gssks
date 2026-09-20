@@ -3,7 +3,7 @@
 ## Recorded result
 
 - Python: **3.13.15**; all direct runtime imports passed.
-- Automated backend/adapter suite: **122 passed**.
+- Automated backend/adapter suite: **125 passed**.
 - Browser: **25 responsive route/width checks passed**, plus mobile navigation, sign-in, admin/editor, public demo filtering, and contact/volunteer submissions.
 - SQLite: initial migration applied; migration drift check reported no new operations.
 
@@ -58,3 +58,5 @@ Lighthouse scores, real mobile-device results, live gateway results and an indep
 `.github/workflows/verify.yml` defines a Python 3.13 job with an isolated PostgreSQL 16 service. It applies/checks migrations and runs the functional suite against both SQLite and PostgreSQL. This workflow is supplied but has not been executed in your GitHub account.
 
 You can run the same suite against a **disposable test database only** by setting `TEST_DATABASE_URL`. The fixture creates and drops all application tables. Never point that variable at production or a database containing records you need to retain.
+
+Local startup regression: fresh temporary checkout, no .env or database, `python run.py` creates both and serves HTTP 200. Repeat initialization preserves users and configuration. Production and remote databases are rejected by automatic local setup.

@@ -21,7 +21,6 @@ py -3.13 -m venv venv
 .\venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements.txt
-python scripts/setup.py
 python run.py
 ```
 
@@ -29,13 +28,12 @@ If PowerShell prevents activation, use the interpreter directly; no execution-po
 
 ```powershell
 .\venv\Scripts\python.exe -m pip install -r requirements.txt
-.\venv\Scripts\python.exe scripts/setup.py
 .\venv\Scripts\python.exe run.py
 ```
 
 Open **http://127.0.0.1:5000**. Admin login: **http://127.0.0.1:5000/admin/login**.
 
-`setup.py` creates `.env` with a generated development secret, applies the included database migration, and seeds demo accounts/content. It does not ask you to type a hidden password. It preserves an existing `.env`.
+`python run.py` now automatically creates a missing `.env`, generates a local secret, applies database migrations and seeds development accounts before starting the website. Repeated starts preserve existing settings, accounts and records. No Cloudinary, SMTP or Razorpay credentials are required. Local startup uses SQLite and refuses production/remote-database auto-initialization. `scripts/setup.py` remains available for manual setup. Production WSGI imports do not auto-seed.
 
 ## Start locally on Linux or macOS
 
@@ -44,7 +42,6 @@ python3.13 -m venv venv
 source venv/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
-python scripts/setup.py
 python run.py
 ```
 
