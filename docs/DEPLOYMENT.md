@@ -1,3 +1,7 @@
+# Current free-plan deployment
+
+Follow [RENDER_FREE.md](RENDER_FREE.md) for the current Render Free configuration and existing-service dashboard changes. The earlier paid-service deployment below remains a production reference, not the free-plan setup.
+
 # Render deployment
 
 This package contains deployment configuration; it has not been deployed to an account or domain on your behalf. Hosting resources may incur charges. Choose plans in your own Render account before applying the Blueprint.
