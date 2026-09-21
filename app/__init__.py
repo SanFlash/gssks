@@ -105,7 +105,7 @@ def create_app(test_config=None):
                 "errors/configuration.html", title="Configuration required"
             ), 503
         if g.site.get("maintenance") == "true" and not request.path.startswith(
-            ("/admin", "/login", "/logout", "/health", "/api/donations/webhook")
+            ("/admin", "/login", "/logout", "/auth/csrf", "/health", "/api/donations/webhook")
         ):
             if not current_user.is_authenticated or not current_user.can("admin.view"):
                 return render_template(
@@ -218,12 +218,16 @@ def create_app(test_config=None):
             response.headers["Strict-Transport-Security"] = (
                 "max-age=31536000; includeSubDomains"
             )
+        # HTML includes session-bound form tokens, including the public newsletter.
+        if response.mimetype == "text/html" or request.path == "/auth/csrf":
+            response.headers["Cache-Control"] = "no-store, private"
         if request.path.startswith(
             (
                 "/admin",
                 "/api",
                 "/login",
                 "/account",
+                "/auth/csrf",
                 "/donations",
                 "/donation-success",
                 "/reset-password",
@@ -252,11 +256,12 @@ def create_app(test_config=None):
             return jsonify(
                 error="Session expired or CSRF token missing. Refresh and retry."
             ), 400
+        app.logger.warning(json.dumps({
+            "event": "csrf_rejected", "route": request.endpoint,
+            "reason": error.description,
+        }))
         return render_template(
-            "errors/error.html",
-            title="Please refresh",
-            code=400,
-            message="Your form session expired or its security token is missing. Refresh the page and try again.",
+            "errors/csrf.html", title="Reopen your form", code=400,
         ), 400
 
     @app.errorhandler(Exception)

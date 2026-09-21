@@ -212,3 +212,7 @@ Password reset links expire after 30 minutes and become invalid after the first 
 ### Verification limits
 
 Local tests do not certify live provider configuration, accessibility conformance, security audit completion or a Lighthouse score. Complete the staging/provider checks in `docs/TESTING.md` before public launch. Do not describe this release as independently certified or already deployed.
+
+### Admin sign-in and expired form recovery
+
+See [Admin access and Render configuration](docs/ADMIN_ACCESS.md) for first-admin setup, staff roles, CMS editing, and security-token troubleshooting. Tokens are generated automatically; never disable CSRF to resolve a login problem.

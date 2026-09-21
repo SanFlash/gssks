@@ -10,7 +10,10 @@ from flask import (
     flash,
     session,
     current_app,
+    jsonify,
+    abort,
 )
+from flask_wtf.csrf import generate_csrf
 from flask_login import login_user, logout_user, login_required, current_user
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -158,3 +161,15 @@ def reset(token):
 @login_required
 def account():
     return render_template("auth/account.html", title="Your account")
+
+
+@auth_bp.get("/auth/csrf")
+@limiter.limit("60 per minute")
+def refresh_csrf():
+    """Issue a session-bound token without accepting cross-origin access."""
+    if request.headers.get("Sec-Fetch-Site") == "cross-site":
+        abort(403)
+    origin = request.headers.get("Origin")
+    if origin and origin.rstrip("/") != request.host_url.rstrip("/"):
+        abort(403)
+    return jsonify(csrf_token=generate_csrf(), authenticated=current_user.is_authenticated)

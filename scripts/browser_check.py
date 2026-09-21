@@ -106,7 +106,16 @@ with sync_playwright() as p:
         assert not overflow, path
     page.locator("#email").fill("admin.demo@gyanpath.local")
     page.locator("#password").fill("Gyanpath@Demo2026!")
+    page.route("**/auth/csrf", lambda route: route.abort())
     page.get_by_role("button", name="Sign in securely").click()
+    expect(page.locator(".session-status")).to_contain_text("Your text has not been cleared")
+    assert page.locator("#email").input_value() == "admin.demo@gyanpath.local"
+    page.unroute("**/auth/csrf")
+    # Simulate a form left open across cookie expiry. The refresh must recover it.
+    context.clear_cookies()
+    page.locator('input[name="csrf_token"]').first.evaluate("el => el.value = 'expired-token'")
+    with page.expect_navigation():
+        page.get_by_role("button", name="Sign in securely").click()
     page.goto("http://127.0.0.1:5099/admin", wait_until="domcontentloaded")
     assert page.locator(".admin-sidebar").count() == 1
     page.screenshot(path=str(output / "admin-mobile.png"), full_page=True)
@@ -120,7 +129,14 @@ with sync_playwright() as p:
     page.screenshot(path=str(output / "studio-mobile.png"), full_page=True)
     page.goto("http://127.0.0.1:5099/admin/website/leadership", wait_until="domcontentloaded")
     page.locator("#founder_bio").fill("Organization-approved biography entered during browser verification.")
+    saved_cookies = context.cookies()
+    context.clear_cookies()
     page.get_by_role("button", name="Save settings").click()
+    expect(page.locator(".session-status")).to_contain_text("Your sign-in expired")
+    assert page.locator("#founder_bio").input_value() == "Organization-approved biography entered during browser verification."
+    context.add_cookies(saved_cookies)
+    with page.expect_navigation():
+        page.get_by_role("button", name="Save settings").click()
     page.goto("http://127.0.0.1:5099/recognition", wait_until="domcontentloaded")
     assert "Organization-approved biography entered during browser verification." in page.locator("main").inner_text()
     page.set_viewport_size({"width": 1440, "height": 1000})
@@ -140,7 +156,8 @@ with sync_playwright() as p:
     page.locator("#subject").fill("Browser test enquiry")
     page.locator("#message").fill("Testing the complete browser submission workflow.")
     page.locator("#consent").check()
-    page.get_by_role("button", name="Send enquiry").click()
+    with page.expect_navigation():
+        page.get_by_role("button", name="Send enquiry").click()
     assert (
         page.get_by_role("status")
         .filter(has_text="Your enquiry has been received")
@@ -158,7 +175,8 @@ with sync_playwright() as p:
     }.items():
         page.locator("#" + field).fill(value)
     page.locator("#consent").check()
-    page.get_by_role("button", name="Submit application").click()
+    with page.expect_navigation():
+        page.get_by_role("button", name="Submit application").click()
     assert (
         page.get_by_role("status")
         .filter(has_text="Your application has been received")
