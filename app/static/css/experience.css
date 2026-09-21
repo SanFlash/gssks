@@ -1,0 +1,21 @@
+/* Motion layer preserves the approved blue/red identity and content hierarchy. */
+.institutional-hero{position:relative;isolation:isolate;overflow:hidden}
+.geometry-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.reading-progress{position:fixed;left:0;top:0;width:100%;height:3px;background:linear-gradient(90deg,#182b78,#b52e35);transform:scaleX(0);transform-origin:left;z-index:1200;pointer-events:none}
+.motion-control{font:inherit;font-size:.8rem;color:inherit;background:transparent;border:1px solid currentColor;border-radius:30px;padding:9px 14px;cursor:pointer;min-height:44px}
+.motion-control:disabled{cursor:default;opacity:.8}
+.motion-control:focus-visible{outline:3px solid #b52e35;outline-offset:4px}
+[data-motion=on] .focus-card,[data-motion=on] .project-card,[data-motion=on] .document-cards article,[data-motion=on] .recognition-card{transition:transform .25s ease,box-shadow .3s ease,border-color .3s ease}
+[data-motion=on] .button{transition:transform .22s ease,box-shadow .22s ease,background .22s ease}
+[data-motion=on] .button:hover{transform:translateY(-2px);box-shadow:0 8px 24px #182b7820}
+[data-motion=on] .button:active{transform:translateY(0)}
+[data-motion=on] .site-header nav a{position:relative}
+[data-motion=on] .site-header nav a::after{content:'';position:absolute;bottom:-5px;left:0;width:100%;height:2px;background:#b52e35;transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+[data-motion=on] .site-header nav a:hover::after,[data-motion=on] .site-header nav a[aria-current=page]::after{transform:scaleX(1)}
+[data-motion=on] .brand-gallery img{transition:transform .6s ease}
+[data-motion=on] .brand-gallery .gallery-image:hover img{transform:scale(1.025)}
+[data-motion=off] .geometry-canvas{visibility:hidden}
+[data-motion=off] *,[data-motion=off] *::before,[data-motion=off] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+[data-motion=off] .reveal{opacity:1!important;transform:none!important}
+@media(prefers-reduced-motion:reduce){.geometry-canvas{display:none}.reading-progress{display:none}}
+@media print{.geometry-canvas,.reading-progress,.motion-control{display:none}}

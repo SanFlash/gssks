@@ -5,7 +5,7 @@ import threading
 import tempfile
 from pathlib import Path
 from werkzeug.serving import make_server, WSGIRequestHandler
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 from dotenv import dotenv_values
 from app import create_app
 from app.extensions import db
@@ -166,6 +166,30 @@ with sync_playwright() as p:
         == 1
     )
     assert not errors, errors
+    motion_context = browser.new_context(viewport={"width": 1440, "height": 1000}, reduced_motion="no-preference")
+    motion_context.route("https://**/*", lambda route: route.abort())
+    motion_page = motion_context.new_page()
+    motion_page.on("pageerror", lambda e: errors.append(str(e)))
+    motion_page.goto("http://127.0.0.1:5099/", wait_until="networkidle")
+    assert motion_page.locator("html").get_attribute("data-motion") == "on"
+    assert motion_page.locator(".geometry-canvas").count() == 1
+    motion_page.screenshot(path="/tmp/gssks-motion.png")
+    motion_page.get_by_role("button", name="Pause animations").click()
+    assert motion_page.locator("html").get_attribute("data-motion") == "off"
+    motion_page.reload(wait_until="networkidle")
+    assert motion_page.locator("html").get_attribute("data-motion") == "off"
+    motion_page.get_by_role("button", name="Animations paused").click()
+    assert motion_page.locator("html").get_attribute("data-motion") == "on"
+    motion_page.emulate_media(reduced_motion="reduce")
+    expect(motion_page.locator("html")).to_have_attribute("data-motion", "off")
+    assert motion_page.get_by_role("button", name="Animations paused").is_disabled()
+    motion_page.emulate_media(reduced_motion="no-preference")
+    expect(motion_page.locator("html")).to_have_attribute("data-motion", "on")
+    motion_page.set_viewport_size({"width": 320, "height": 760})
+    assert motion_page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    assert not errors, errors
+    print("Motion checks passed: normal mode, pause, persistence, resume, live reduced-motion change, mobile overflow.")
+    motion_context.close()
     browser.close()
 server.shutdown()
 temporary.cleanup()
