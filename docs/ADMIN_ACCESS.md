@@ -55,3 +55,7 @@ Save changes and check the public page. Records must be published, and associate
 ## Diagnosis if it persists
 
 Check Render logs for `csrf_rejected`, which records the reason and route without passwords or tokens. Confirm the latest deployment is live, cookies are accepted, the SECRET_KEY is stable, and all tabs use the same host. A fresh login GET must return 200 with a session cookie. A token never substitutes for valid credentials or role permissions.
+
+## HTTPS form fix
+
+The former private-page `Referrer-Policy: no-referrer` suppressed a header required by Flask-WTF strict HTTPS CSRF checks. That caused valid tokens to fail on Render while local HTTP checks passed. Private pages now use `same-origin`: same-site submissions retain the header, while external destinations receive no referrer. CSRF and strict HTTPS origin checks remain enabled. Browser QA now runs over TLS with secure cookies. Deploy this correction and reopen the login page; no new token or SECRET_KEY is required.

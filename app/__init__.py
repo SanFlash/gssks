@@ -236,7 +236,8 @@ def create_app(test_config=None):
         ):
             response.headers["Cache-Control"] = "no-store, private"
             response.headers["X-Robots-Tag"] = "noindex, nofollow"
-            response.headers["Referrer-Policy"] = "no-referrer"
+            # HTTPS CSRF requires a same-origin Referer; omit it only off-site.
+            response.headers["Referrer-Policy"] = "same-origin"
         return response
 
     @app.errorhandler(HTTPException)

@@ -22,6 +22,7 @@ app = create_app(
     {
         **{key: value for key, value in dotenv_values(".env.example").items() if key.startswith("DEMO_")},
         "RATELIMIT_ENABLED": False,
+        "SESSION_COOKIE_SECURE": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///" + temporary.name + "/browser.db",
     }
 )
@@ -29,7 +30,7 @@ with app.app_context():
     db.create_all()
     seed_content(demo=True)
 server = make_server(
-    "127.0.0.1", 5099, app, threaded=True, request_handler=QuietHandler
+    "127.0.0.1", 5099, app, threaded=True, request_handler=QuietHandler, ssl_context="adhoc"
 )
 threading.Thread(target=server.serve_forever, daemon=True).start()
 output = Path("docs/screenshots")
@@ -38,14 +39,14 @@ results = []
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
     context = browser.new_context(
-        viewport={"width": 1440, "height": 1000}, reduced_motion="reduce"
+        ignore_https_errors=True, viewport={"width": 1440, "height": 1000}, reduced_motion="reduce"
     )
     page = context.new_page()
     errors = []
     page.on("pageerror", lambda e: errors.append(str(e)))
     # External fonts and motion libraries are optional; use deterministic local fallbacks for QA.
-    context.route("https://**/*", lambda route: route.abort())
-    page.goto("http://127.0.0.1:5099/", wait_until="networkidle")
+    context.route("https://**/*", lambda route: route.continue_() if route.request.url.startswith("https://127.0.0.1:5099/") else route.abort())
+    page.goto("https://127.0.0.1:5099/", wait_until="networkidle")
     page.screenshot(path=str(output / "home-desktop.png"), full_page=True)
     widths = [
         320,
@@ -67,7 +68,7 @@ with sync_playwright() as p:
     ]
     for width in widths:
         page.set_viewport_size({"width": width, "height": 900})
-        page.goto("http://127.0.0.1:5099/", wait_until="domcontentloaded")
+        page.goto("https://127.0.0.1:5099/", wait_until="domcontentloaded")
         overflow = page.evaluate(
             "document.documentElement.scrollWidth > window.innerWidth + 1"
         )
@@ -98,7 +99,7 @@ with sync_playwright() as p:
         "/gallery",
         "/login",
     ]:
-        page.goto("http://127.0.0.1:5099" + path, wait_until="domcontentloaded")
+        page.goto("https://127.0.0.1:5099" + path, wait_until="domcontentloaded")
         overflow = page.evaluate(
             "document.documentElement.scrollWidth > window.innerWidth + 1"
         )
@@ -116,18 +117,18 @@ with sync_playwright() as p:
     page.locator('input[name="csrf_token"]').first.evaluate("el => el.value = 'expired-token'")
     with page.expect_navigation():
         page.get_by_role("button", name="Sign in securely").click()
-    page.goto("http://127.0.0.1:5099/admin", wait_until="domcontentloaded")
+    page.goto("https://127.0.0.1:5099/admin", wait_until="domcontentloaded")
     assert page.locator(".admin-sidebar").count() == 1
     page.screenshot(path=str(output / "admin-mobile.png"), full_page=True)
     page.set_viewport_size({"width": 1440, "height": 1000})
     page.screenshot(path=str(output / "admin-desktop.png"), full_page=True)
-    page.goto("http://127.0.0.1:5099/admin/content-studio", wait_until="domcontentloaded")
+    page.goto("https://127.0.0.1:5099/admin/content-studio", wait_until="domcontentloaded")
     assert page.get_by_role("heading", name="ICPS programme page").count() == 1
     page.screenshot(path=str(output / "studio-desktop.png"), full_page=True)
     page.set_viewport_size({"width": 390, "height": 844})
     assert not page.evaluate("document.documentElement.scrollWidth > innerWidth + 1")
     page.screenshot(path=str(output / "studio-mobile.png"), full_page=True)
-    page.goto("http://127.0.0.1:5099/admin/website/leadership", wait_until="domcontentloaded")
+    page.goto("https://127.0.0.1:5099/admin/website/leadership", wait_until="domcontentloaded")
     page.locator("#founder_bio").fill("Organization-approved biography entered during browser verification.")
     saved_cookies = context.cookies()
     context.clear_cookies()
@@ -137,20 +138,20 @@ with sync_playwright() as p:
     context.add_cookies(saved_cookies)
     with page.expect_navigation():
         page.get_by_role("button", name="Save settings").click()
-    page.goto("http://127.0.0.1:5099/recognition", wait_until="domcontentloaded")
+    page.goto("https://127.0.0.1:5099/recognition", wait_until="domcontentloaded")
     assert "Organization-approved biography entered during browser verification." in page.locator("main").inner_text()
     page.set_viewport_size({"width": 1440, "height": 1000})
     page.goto(
-        "http://127.0.0.1:5099/admin/manage/projects/new", wait_until="domcontentloaded"
+        "https://127.0.0.1:5099/admin/manage/projects/new", wait_until="domcontentloaded"
     )
     assert page.locator(".rich-editor").count() > 0
     page.set_viewport_size({"width": 320, "height": 900})
     assert not page.evaluate(
         "document.documentElement.scrollWidth > window.innerWidth + 1"
     )
-    page.goto("http://127.0.0.1:5099/gallery", wait_until="domcontentloaded")
+    page.goto("https://127.0.0.1:5099/gallery", wait_until="domcontentloaded")
     assert "DEMO CONTENT" not in page.locator("main").inner_text()
-    page.goto("http://127.0.0.1:5099/contact", wait_until="domcontentloaded")
+    page.goto("https://127.0.0.1:5099/contact", wait_until="domcontentloaded")
     page.locator("#name").fill("QA Example")
     page.locator("#email").fill("qa@example.org")
     page.locator("#subject").fill("Browser test enquiry")
@@ -164,7 +165,7 @@ with sync_playwright() as p:
         .count()
         == 1
     )
-    page.goto("http://127.0.0.1:5099/volunteer", wait_until="domcontentloaded")
+    page.goto("https://127.0.0.1:5099/volunteer", wait_until="domcontentloaded")
     for field, value in {
         "name": "QA Volunteer",
         "email": "qa-volunteer@example.org",
@@ -184,11 +185,11 @@ with sync_playwright() as p:
         == 1
     )
     assert not errors, errors
-    motion_context = browser.new_context(viewport={"width": 1440, "height": 1000}, reduced_motion="no-preference")
-    motion_context.route("https://**/*", lambda route: route.abort())
+    motion_context = browser.new_context(ignore_https_errors=True, viewport={"width": 1440, "height": 1000}, reduced_motion="no-preference")
+    motion_context.route("https://**/*", lambda route: route.continue_() if route.request.url.startswith("https://127.0.0.1:5099/") else route.abort())
     motion_page = motion_context.new_page()
     motion_page.on("pageerror", lambda e: errors.append(str(e)))
-    motion_page.goto("http://127.0.0.1:5099/", wait_until="networkidle")
+    motion_page.goto("https://127.0.0.1:5099/", wait_until="networkidle")
     assert motion_page.locator("html").get_attribute("data-motion") == "on"
     assert motion_page.locator(".geometry-canvas").count() == 1
     motion_page.screenshot(path="/tmp/gssks-motion.png")
@@ -214,7 +215,7 @@ temporary.cleanup()
 Path("docs/browser-results.json").write_text(
     json.dumps(
         {
-            "transport": "local WSGI HTTP server",
+            "transport": "local WSGI HTTPS server with secure session cookies",
             "browser": "Chromium 139",
             "reduced_motion": True,
             "external_assets": "blocked to verify local fallback",

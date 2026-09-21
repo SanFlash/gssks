@@ -1,5 +1,5 @@
 {
-  "transport": "local WSGI HTTP server",
+  "transport": "local WSGI HTTPS server with secure session cookies",
   "browser": "Chromium 139",
   "reduced_motion": true,
   "external_assets": "blocked to verify local fallback",

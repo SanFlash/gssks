@@ -45,3 +45,21 @@ def test_public_form_html_is_not_cached(app, client):
         assert response.status_code == 200
         assert 'no-store' in response.headers['Cache-Control']
         assert '/static/js/forms.js' in response.text
+
+
+def test_https_login_keeps_same_origin_referrer(app, client):
+    """HTTPS uses an additional referrer check that HTTP smoke tests miss."""
+    app.config.update(WTF_CSRF_ENABLED=True, SESSION_COOKIE_SECURE=True)
+    origin = 'https://localhost'
+    page = client.get('/admin/login', base_url=origin)
+    assert page.headers['Referrer-Policy'] == 'same-origin'
+    token = re.search(r'name="csrf-token" content="([^"]+)"', page.text)[1]
+    data = {'email': app.config['DEMO_ADMIN_EMAIL'],
+            'password': app.config['DEMO_ADMIN_PASSWORD'], 'csrf_token': token}
+    # Do not resolve the header conflict by disabling strict HTTPS CSRF checks.
+    assert client.post('/admin/login', base_url=origin, data=data).status_code == 400
+    assert client.post('/admin/login', base_url=origin, data=data,
+                       headers={'Referer': 'https://attacker.example/'}).status_code == 400
+    result = client.post('/admin/login', base_url=origin, data=data,
+                         headers={'Referer': origin + '/admin/login'})
+    assert result.status_code == 302

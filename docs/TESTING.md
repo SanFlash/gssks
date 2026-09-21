@@ -62,3 +62,7 @@ You can run the same suite against a **disposable test database only** by settin
 Local startup regression: fresh temporary checkout, no .env or database, `python run.py` creates both and serves HTTP 200. Repeat initialization preserves users and configuration. Production and remote databases are rejected by automatic local setup.
 
 Client UI revision: Python 3.13.15, 133 tests passed. Browser checks include ICPS, recognition, About, Website Studio, and saving founder biography through the admin form. Source-review drafts stay outside public routes/search/sitemap. Certificate tests cover complete metadata and public/private document boundaries.
+
+## HTTPS form-session regression
+
+Reproduced login failure over real local TLS with secure cookies: the previous no-referrer policy caused Flask-WTF to reject valid tokens. After changing private pages to same-origin, four form-session tests and 28 responsive browser checks passed, including login, admin save, contact, volunteer, expiry recovery and motion controls. Missing and cross-origin HTTPS referrers remain rejected. Browser QA uses a temporary self-signed local TLS certificate, ignored only by the test browser.
