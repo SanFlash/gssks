@@ -8,7 +8,7 @@
 {% if record is defined and record.keywords %}<meta name="keywords" content="{{ record.keywords }}">{% endif %}
 <meta name="ga-measurement-id" content="{{ config.GA_MEASUREMENT_ID }}"><meta name="csrf-token" content="{{ csrf_token() }}"><link rel="canonical" href="{{ canonical }}">
 <meta property="og:title" content="{{ title }} · GSSKS"><meta property="og:description" content="{{ site.seo_description }}"><meta property="og:url" content="{{ canonical }}"><meta property="og:type" content="website"><meta name="twitter:card" content="summary">
-<link rel="icon" href="{{ site.favicon or url_for('static', filename='images/gssks-logo.png') }}">
+<link rel="icon" href="{{ site.favicon or url_for('static', filename='images/gssks-logo.png', v='transparent-1') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
@@ -23,7 +23,7 @@
 {% block navigation %}
 <div class="top-strip"><span>Established {{ site.established }} · {{ site.recognition }}</span><a href="tel:{{ site.phone }}">{{ site.phone }}</a></div>
 <header class="site-header">
-<a class="brand" href="/" aria-label="GSSKS home"><img src="{{ site.logo or url_for('static', filename='images/gssks-logo.png') }}" width="44" height="44" alt=""><span>Gyan Path<small>SHIKSHA EVAM SAMAJ KALYAN SAMITI</small></span></a>
+<a class="brand" href="/" aria-label="GSSKS home"><img src="{{ site.logo or url_for('static', filename='images/gssks-logo.png', v='transparent-1') }}" width="44" height="44" alt=""><span>Gyan Path<small>SHIKSHA EVAM SAMAJ KALYAN SAMITI</small></span></a>
 <button class="menu-toggle" aria-controls="primary-nav" aria-expanded="false" aria-label="Open navigation">☰</button>
 <nav id="primary-nav" aria-label="Main navigation">
 {% for path, label in [('/', 'Home'),('/about','About'),('/icps','ICPS'),('/work','Our Work'),('/recognition','Recognition'),('/gallery','Gallery'),('/documents','Documents'),('/contact','Contact'),('/get-involved','Get Involved')] %}<a href="{{ path }}" {% if request.path == path %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
@@ -34,7 +34,7 @@
 {% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="toast {{ category }}" role="status">{{ message }}<button type="button" aria-label="Dismiss notification">×</button></div>{% endfor %}{% endwith %}
 <main id="main">{% block content %}{% endblock %}</main>
 {% block footer %}
-<footer class="site-footer"><div class="footer-grid"><div><a class="brand" href="/"><img src="{{ site.logo or url_for('static', filename='images/gssks-logo.png') }}" width="44" height="44" alt=""><span>GSSKS</span></a><p>{{ site.footer_text }}</p><p>{{ site.organization_name }}</p><p>Registration No. {{ site.registration }}<br>{{ site.address }}</p><p><a href="tel:{{ site.phone }}">{{ site.phone }}</a><a href="tel:{{ site.mobile }}">{{ site.mobile }}</a><a href="mailto:{{ site.email }}">{{ site.email }}</a></p><div class="socials">{% for social in socials %}<a href="{{ social.url }}" rel="noopener noreferrer" target="_blank">{{ social.title }}</a>{% endfor %}</div></div>
+<footer class="site-footer"><div class="footer-grid"><div><a class="brand" href="/"><img src="{{ site.logo or url_for('static', filename='images/gssks-logo.png', v='transparent-1') }}" width="44" height="44" alt=""><span>GSSKS</span></a><p>{{ site.footer_text }}</p><p>{{ site.organization_name }}</p><p>Registration No. {{ site.registration }}<br>{{ site.address }}</p><p><a href="tel:{{ site.phone }}">{{ site.phone }}</a><a href="tel:{{ site.mobile }}">{{ site.mobile }}</a><a href="mailto:{{ site.email }}">{{ site.email }}</a></p><div class="socials">{% for social in socials %}<a href="{{ social.url }}" rel="noopener noreferrer" target="_blank">{{ social.title }}</a>{% endfor %}</div></div>
 <div><h3>Explore</h3><a href="/about">About us</a><a href="/work">Our Work</a><a href="/get-involved">Get Involved</a><a href="/projects">Projects</a><a href="/artisans">Artisans</a><a href="/news-events">News & Events</a></div>
 <div><h3>Stay informed</h3><a href="/gallery">Gallery</a><a href="/videos">Videos</a><a href="/reports">Reports</a><a href="/annual-reports">Annual reports</a><a href="/certificates">Certificates</a><a href="/associations">Associations</a><a href="/faq">FAQs</a></div>
 <div><h3>A little closer to our work.</h3><p>Receive updates from the organization.</p><form action="/newsletter" method="post" class="newsletter">{{ newsletter_form.csrf_token }}<label for="newsletter-email">Email address</label>{{ newsletter_form.email(id='newsletter-email', placeholder='you@example.com', type='email', required=True) }}<label class="check">{{ newsletter_form.consent(id='newsletter-consent') }}<span>Send me updates. I can unsubscribe at any time.</span></label><button type="submit" class="button outline">Subscribe →</button></form></div></div>
